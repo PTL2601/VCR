@@ -1,0 +1,4 @@
+watchdog==6.0.0
+Wave==0.0.2
+fuzzywuzzy==0.18.0
+sounddevice==0.5.1
