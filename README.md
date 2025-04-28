@@ -5,4 +5,4 @@
 [VOSK model](https://alphacephei.com/vosk/models)
 
 # Интересные статьи
-* habr.com/ru/articles/814057/
+* [Интересное сравнение VOSK и Whishper](habr.com/ru/articles/814057/)
