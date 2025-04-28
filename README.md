@@ -2,7 +2,7 @@
 
 # Miro - goo.su/ctm0pr
 
-
+[Daniil](https://daniilshat.ru/)
 
 # Интересные статьи
 * habr.com/ru/articles/814057/
