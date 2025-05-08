@@ -6,3 +6,4 @@
 
 # Интересные статьи
 * [Интересное сравнение VOSK и Whishper](habr.com/ru/articles/814057/)
+* [Проект Natasha. Распознавание морфизма русских слов](habr.com/ru/articles/516098/)
