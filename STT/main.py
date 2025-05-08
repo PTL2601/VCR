@@ -1,18 +1,6 @@
 from fuzzywuzzy import fuzz
-from stt import STT
+import STT
 
-commandsList = []
+stt = STT("57816563491305416.mp3", model_path=".")
+# recognized_text1 = stt.decode_audio()
 
-
-def equ(text, needed):
-    return fuzz.ratio(text, needed) >= 70
-
-
-def execute(text: str):
-    print(f"> {text}")
-
-
-stt = STT(modelpath="model")
-
-print("listen...")
-stt.listen(execute)
