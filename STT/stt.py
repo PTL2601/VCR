@@ -1,8 +1,14 @@
 import os
+
+from vosk import SetLogLevel
+SetLogLevel(-1)
+
 import json
 import ffmpeg
 import soundfile as sf
 from vosk import Model, KaldiRecognizer
+
+
 
 class STT:
     def __init__(self, audio_path: str, model_path: str = "."):
@@ -52,6 +58,9 @@ class STT:
         if len(data.shape) > 1 and data.shape[1] > 1:
             data = data.mean(axis=1).astype('int16')
 
+        start_sample = int(4 * samplerate) #Skip 5 seconds
+        data = data[start_sample:]
+
         rec = KaldiRecognizer(self.model, samplerate)
         rec.SetWords(True)
 
@@ -69,6 +78,16 @@ class STT:
 
         return text
 
+
+
+# stt = STT("57816563491305416.wav", model_path=".")
+# recognized_text = stt.decode_audio()
+#
+# stt = STT("57816563491305416.mp3", model_path=".")
+# recognized_text1 = stt.decode_audio()
+#
+# print("Распознанный текст wav - ", recognized_text)
+# print("Распознанный текст mp3 - ", recognized_text1)
 
 
 
