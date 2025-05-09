@@ -7,7 +7,7 @@ cdr = "cdr_description.html"
 
 #ОТКРОЙ ПУТЬ ДО МОДЕЛИ
 ################################################################
-#model_path = "E:/VKR/VKR actual/STT/Vosk/model"
+model_path = "E:/VKR/VKR actual/STT/Vosk/model"
 #model_path = "C:/Users/Denis Beryozkin/Desktop/local test"
 ################################################################
 
@@ -22,3 +22,5 @@ extractor.load_and_clean_html()
 caller_number = extractor.extract_caller_number()
 recognized_text = stt.decode_audio()
 keywords = kws.KWS(recognized_text)
+keywords_tools = keywords.tools
+keywords_problems = keywords.problems
