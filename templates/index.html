@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Загрузка файлов для расшифровки</title>
+</head>
+<body>
+    <h2>Загрузите файлы</h2>
+    <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+        <label>Файл записи звонка:</label><br>
+        <input type="file" name="file1" accept=".wav" required><br><br>
+
+        <label>Файл идентификации:</label><br>
+        <input type="file" name="file2" accept=".html" required><br><br>
+
+        <button type="submit">Загрузить оба файла</button>
+    </form>
+</body>
+</html>

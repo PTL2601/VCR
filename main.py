@@ -1,13 +1,98 @@
 from STT import id
-from STT import STT
+from STT import stt
+from KWR import kws
+import psycopg2 as pg
+import os
+from flask import Flask, flash, request, redirect, url_for
+from werkzeug.utils import secure_filename
 
-audio_file = "57816563491305416.wav" #!
-caller_number_catch = "cdr_description.html" #!
 
-extractor = id.CallerNumberExtractor(caller_number_catch)
+# Подключение к БД
+# try:
+    # Контейнер с подключением к БД
+    # conn = pg.connect(dbname='postgres', user='postgres', password='0000', host='localhost')
+# except: print("Не удалось подключиться к базе данных")  # При неудаче
 
-stt = STT.STT(audio_file, model_path="C:/Users/Denis Beryozkin/Desktop/local test") #!model_path!
-extractor.load_and_clean_html()
+UPLOAD_FOLDER = '/path/to/the/uploads'
+ALLOWED_EXTENSIONS = {'wav', 'html'}
 
-caller_number = extractor.extract_caller_number()
-recognized_text = stt.decode_audio()
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('download_file', name=filename))
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+
+# Контейнеры временные
+audio = "57816563491305416.wav" # Контейнер для аудио
+cdr = "cdr_description.html" # Контейнер для карточки
+
+# ОТКРОЙ ПУТЬ ДО МОДЕЛИ
+################################################################
+model_path = "E:/VKR/VKR actual/STT/Vosk/model"
+# model_path = "C:/Users/Denis Beryozkin/Desktop/local test"
+################################################################
+
+# Контейнеры
+audio_file = audio
+caller_number_catch = cdr
+
+extractor = id.CallerNumberExtractor(caller_number_catch)       # Метод для кэча инфы с карты
+
+stt = stt.STT(audio_file, model_path)       # Метод расшифровки аудиофайла
+extractor.load_and_clean_html()             # Метод загрузки инфы с карты
+
+
+caller_number = extractor.extract_caller_number()       # Метод для распознания номера звонившего + контейнер
+recognized_text = stt.decode_audio()                    # Метод для распознания текста + контейнер
+keywords = kws.KWS(recognized_text)                     # Метод для получения ключевых слов
+keywords_tools = keywords.tools                         # Контейнер для ключевых слов оборудования
+keywords_problems = keywords.problems                   # Контейнер для ключевых слов поломки
+
+# with conn.cursor() as curs:
+#     curs.execute(
+#         'INSERT INTO public.repair_request(id, user_id, room_id, equipment_id, fault_type_id, description, equipment_type, location_id, task_status, priority, user_support_id, is_draft, audio_file, phone_number, recognized_by_ai) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', ('testingVOSK', 'null', 'null', 'null', keywords_problems, recognized_text, keywords_tools, 'null', 'null', 'null', 'null', 'null', 'null', caller_number, 'true'))
+# conn.close()
+
+
+# Интерфейс для MVP
+@app.route('/answer')
+def answer():
+    return "<h1>Номер звонившего</h1>" \
+           f"<h2>{caller_number}</h2>" \
+           "<h1>Распознанные ключевые слова оборудования</h1>" \
+           f"<h2>{keywords_tools}</h2>" \
+           "<h1>Распознанные ключевые слова поломки</h1>" \
+           f"<h2>{keywords_problems}</h2>" \
+           "<h1>Распознанный текст</h1>" \
+           f"<h2>{recognized_text}</h2>"
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

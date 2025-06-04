@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Загрузка успешна</title>
+    <style>
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ddd;
+            max-height: 300px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Номер звонившего</h1>
+    <h2>{{ caller_number }}</h2>
+    <h1>Распознанные ключевые слова оборудования</h1>
+    <h2>{{ keywords_tools }}</h2>
+    <h1>Распознанные ключевые слова поломки</h1>
+    <h2>{{ keywords_problems }}</h2>
+    <h1>Распознанный текст</h1>
+    <h2>{{ recognized_text }}</h2>
+    <h1>SQL-запрос</h1>
+    <h2>{{ sql_text }}</h2>
+    <a href="{{ url_for('index') }}">Вернуться на главную</a>
+</body>
+</html>
