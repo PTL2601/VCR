@@ -1,7 +1,7 @@
 from STT import id
 from STT import stt as sptt
 from KWR import kws
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 import os
 from werkzeug.utils import secure_filename
 
@@ -95,10 +95,36 @@ def upload():
                            recognized_text=recognized_text,
                            sql_text=sql_text)
 
-# with conn.cursor() as curs:
-#     curs.execute(
-#         'INSERT INTO public.repair_request(id, user_id, room_id, equipment_id, fault_type_id, description, equipment_type, location_id, task_status, priority, user_support_id, is_draft, audio_file, phone_number, recognized_by_ai) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', ('testingVOSK', 'null', 'null', 'null', keywords_problems, recognized_text, keywords_tools, 'null', 'null', 'null', 'null', 'null', 'null', caller_number, 'true'))
-# conn.close()
+with conn.cursor() as curs:
+    curs.execute(
+        '''
+        INSERT INTO public.repair_request(
+            id, user_id, room_id, equipment_id, fault_type_id, description,
+            equipment_type, location_id, task_status, priority, user_support_id,
+            is_draft, audio_file, phone_number, recognized_by_ai
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (id) DO UPDATE SET
+            user_id = EXCLUDED.user_id,
+            room_id = EXCLUDED.room_id,
+            equipment_id = EXCLUDED.equipment_id,
+            fault_type_id = EXCLUDED.fault_type_id,
+            description = EXCLUDED.description,
+            equipment_type = EXCLUDED.equipment_type,
+            location_id = EXCLUDED.location_id,
+            task_status = EXCLUDED.task_status,
+            priority = EXCLUDED.priority,
+            user_support_id = EXCLUDED.user_support_id,
+            is_draft = EXCLUDED.is_draft,
+            audio_file = EXCLUDED.audio_file,
+            phone_number = EXCLUDED.phone_number,
+            recognized_by_ai = EXCLUDED.recognized_by_ai
+        ''',
+        (
+            uuid, None, None, None, keywords_problems, recognized_text,
+            keywords_tools, None, None, None, None, None, None, caller_number, True
+        )
+    )
+conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
